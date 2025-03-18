@@ -8,7 +8,7 @@ import GlobalProvider from "./components/globalprovider.tsx";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
    <React.StrictMode>
-      <ThemeProvider defaultTheme="light" storageKey="ui-theme">
+      <ThemeProvider defaultTheme="dark" storageKey="ui-theme">
          <Layout>
             <GlobalProvider>
                <App />

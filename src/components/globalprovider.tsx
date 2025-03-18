@@ -112,7 +112,7 @@ const GlobalContext = createContext<GlobalContextType | null>(null);
 export default function GlobalProvider({ children }: { children: ReactNode; }) {
     const [projects, setProjects] = useState<ProjectType[]>([...DUMMYPROJECTS]);
 
-    const AddProject = (name: string, description: string, languages: Option[]) => {
+    const AddProject = async (name: string, description: string, languages: Option[]) => {
         setProjects((prev) => {
             // Get the next available ID
             const nextId =
@@ -122,6 +122,8 @@ export default function GlobalProvider({ children }: { children: ReactNode; }) {
 
             return [...prev, { id: nextId, name, description, languages, pinned: false }];
         });
+
+        await window.api.CreateProjectFolder(name);
     };
 
     const DeleteProject = (id: number) => {

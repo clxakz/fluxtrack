@@ -38,7 +38,7 @@ export default function ProjectCard({ project }: { project: ProjectType }) {
                     <TooltipProvider>
                         <Tooltip>
                             <TooltipTrigger asChild>
-                                <Button size={"icon"} variant={"ghost"} className="rounded-none grow">
+                                <Button onClick={async () => await window.api.OpenProjectInEditor(project.name)} size={"icon"} variant={"ghost"} className="rounded-none grow">
                                     <Play />
                                 </Button>
                             </TooltipTrigger>

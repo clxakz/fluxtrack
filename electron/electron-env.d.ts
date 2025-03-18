@@ -23,5 +23,10 @@ declare namespace NodeJS {
 
 // Used in Renderer process, expose in `preload.ts`
 interface Window {
-  ipcRenderer: import('electron').IpcRenderer
+  ipcRenderer: import('electron').IpcRenderer,
+
+  api: {
+    CreateProjectFolder: (name: string) => Promise<void>;
+    OpenProjectInEditor: (name: string) => Promise<void>;
+  }
 }

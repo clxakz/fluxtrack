@@ -1,6 +1,10 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, ipcMain } from "electron";
 import { fileURLToPath } from "node:url";
-import path from "node:path";
+import path, { join } from "node:path";
+import { promises as fs } from 'fs';
+import { PathLike } from "node:fs";
+import { exec } from "child_process";
+
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 process.env.APP_ROOT = path.join(__dirname, "..");
@@ -35,7 +39,7 @@ function createWindow() {
          preload: path.join(__dirname, "preload.mjs"),
          nodeIntegration: false,
          contextIsolation: true,
-         sandbox: true,
+         sandbox: true
       },
    });
 
@@ -63,5 +67,35 @@ app.on("activate", () => {
    }
 });
 
+const Documents: PathLike = app.getPath("documents");
+
 app.disableHardwareAcceleration();
-app.whenReady().then(createWindow);
+app.whenReady().then(() => {
+   createWindow();
+
+   // Handle Ipc
+   ipcMain.handle("create-project-folder", async (_event, name: string) => {
+      try {
+         await fs.mkdir(join(Documents, "fluxtrack-projects", name), { recursive: true });
+         console.log(`Folder created: ${join(Documents, "fluxtrack-projects", name)}`);
+       } catch (error) {
+         console.error('Error creating folder:', error);
+       }
+   })
+
+   ipcMain.handle("open-project-in-editor", async (_event, name: string) => {
+      const resolvedPath = path.resolve(Documents, "fluxtrack-projects", name);
+      const editorPrefix = `"trae"`;
+
+      exec(`"${editorPrefix}" "${resolvedPath}"`, (error, stdout, stderr) => {
+         if (error) {
+            console.error(`Error opening folder in Editor: ${error}`);
+            return;
+         }
+         console.log(`Editor opened folder: ${stdout}`);
+         if (stderr) {
+            console.error(`Editor stderr: ${stderr}`);
+         }
+      });
+   });
+});
